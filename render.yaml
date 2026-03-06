@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: wedplan-backend
+    name: sds
     env: php
     region: oregon
     plan: free
@@ -19,7 +19,7 @@ services:
       php -S 0.0.0.0:$PORT -t public
     envVars:
       - key: APP_NAME
-        value: WedPlan
+        value: Shalom Digital Solutions
       - key: APP_ENV
         value: production
       - key: APP_DEBUG

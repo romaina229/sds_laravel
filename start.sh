@@ -1,10 +1,10 @@
 #!/bin/bash
 # ================================================================
-# start.sh — WedPlan Backend pour Render + Supabase
+# start.sh — SDS Backend pour Render + Supabase
 # ================================================================
 set -e
 
-echo "🚀 WedPlan Backend — Démarrage sur Render"
+echo "🚀 Shalom Dgital Solutions — Démarrage sur Render"
 cd /var/www/html 2>/dev/null || cd /opt/render/project/src/backend 2>/dev/null || true
 
 # ================================================================
@@ -19,7 +19,7 @@ if [ -z "$APP_KEY" ]; then
 fi
 
 cat > .env << ENVEOF
-APP_NAME=WedPlan
+APP_NAME=Shalom Digital Solutions
 APP_ENV=production
 APP_KEY=${APP_KEY}
 APP_DEBUG=false
