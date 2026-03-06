@@ -36,7 +36,7 @@ DB_USERNAME=${DB_USERNAME:-postgres.xxxxx}
 DB_PASSWORD=${DB_PASSWORD:-xxxxxx}
 
 # Cache / Session / Queue
-SESSION_DRIVER=databse
+SESSION_DRIVER=database
 CACHE_STORE=cookie
 QUEUE_CONNECTION=sync
 
@@ -48,6 +48,7 @@ echo "✅ .env généré — DB_HOST=${DB_HOST}, DB_DATABASE=${DB_DATABASE}"
 # ================================================================
 # 2️⃣ Laravel setup
 # ================================================================
+php artisan package:discover --ansi 2>&1 || true
 php artisan config:clear 2>&1 || true
 php artisan config:cache 2>&1
 

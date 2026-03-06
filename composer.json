@@ -1,14 +1,17 @@
 {
     "name": "shalom/digital-solutions",
-    "description": "Shalom Digital Solutions - Plateforme de services numériques",
-    "keywords": ["laravel", "framework"],
+    "description": "Shalom Digital Solutions - API Backend",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "proprietary",
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.0",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^12.0",
-        "laravel/sanctum": "^4.3",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {
@@ -43,14 +46,14 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
+            "@php artisan key:generate --ansi"
         ]
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "nunomaduro/collision"
+            ]
         }
     },
     "config": {
