@@ -37,7 +37,7 @@ DB_PASSWORD=${DB_PASSWORD:-xxxxxx}
 
 # Cache / Session / Queue
 SESSION_DRIVER=database
-CACHE_STORE=cookie
+CACHE_STORE=file
 QUEUE_CONNECTION=sync
 
 FRONTEND_URL=${FRONTEND_URL:-*}
