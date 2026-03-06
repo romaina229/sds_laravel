@@ -7,7 +7,7 @@ return [
 
     // En production : mettre votre URL Vercel dans FRONTEND_URL
     'allowed_origins' => ['http://localhost:5173',
-        env('FRONTEND_URL', 'http://localhost:3000'),
+        env('FRONTEND_URL', 'https://salomdigitalsolutions.vercel.app'),
     ],
 
     'allowed_origins_patterns' => [
