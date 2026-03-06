@@ -19,7 +19,7 @@ if [ -z "$APP_KEY" ]; then
 fi
 
 cat > .env << ENVEOF
-APP_NAME=Shalom Digital Solutions
+APP_NAME="Shalom Digital Solutions"
 APP_ENV=production
 APP_KEY=${APP_KEY}
 APP_DEBUG=false
