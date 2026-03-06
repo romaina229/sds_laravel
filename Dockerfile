@@ -1,5 +1,5 @@
 # ================================================================
-# Dockerfile — WedPlan Backend Laravel 11 pour Render + Supabase
+# Dockerfile — SDS Backend Laravel 12 pour Render + Supabase
 # ================================================================
 FROM php:8.3-cli
 
@@ -23,11 +23,6 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------
-# 2️⃣ Extensions PHP nécessaires
-# ---------------------------------------------------------------
-RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip opcache
-
-# ---------------------------------------------------------------
 # 3️⃣ Composer
 # ---------------------------------------------------------------
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
@@ -45,7 +40,8 @@ WORKDIR /var/www/html
 COPY . .
 
 # Installer les dépendances Laravel sans dev
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+ENV APP_ENV=production
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # Permissions correctes
 RUN chown -R www-data:www-data /var/www/html \
