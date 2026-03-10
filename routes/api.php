@@ -35,6 +35,9 @@ Route::get('/paiement/annule/{commande}', function (string $commande) {
 // Contact
 Route::post('/contact', [ContactController::class, 'store']);
 
+// Garder en éveil render 
+Route::get('health', fn() => response()->json(['status' => 'ok']));
+
 // Blog
 Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/categories', [BlogController::class, 'categories']);
