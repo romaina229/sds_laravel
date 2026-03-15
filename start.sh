@@ -53,7 +53,7 @@ php artisan config:clear 2>&1 || true
 php artisan config:cache 2>&1
 
 echo "🔄 Migration de la base..."
-php artisan migrate:fresh 2>&1 || true 
+php artisan migrate --force 2>&1 || true 
 
 # ================================================================
 # 3️⃣ Seeder si base vide
@@ -61,7 +61,7 @@ php artisan migrate:fresh 2>&1 || true
 COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null | grep -E '^[0-9]+$' | tail -1)
 if [ -z "$COUNT" ] || [ "$COUNT" = "0" ]; then
     echo "🌱 Seeder..."
-    php artisan db:seed --force 2>&1 || true
+    php artisan db:seed --force 2>&1 
 fi
 
 # ================================================================
