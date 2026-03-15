@@ -53,7 +53,7 @@ php artisan config:clear 2>&1 || true
 php artisan config:cache 2>&1
 
 echo "🔄 Migration de la base..."
-php artisan migrate:fresh 2>&1
+php artisan migrate --class=DatabaseSeeder --force 2>&1
 
 # ================================================================
 # 3️⃣ Seeder si base vide
