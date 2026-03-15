@@ -4,7 +4,7 @@
 # ================================================================
 set -e
 
-echo "🚀 Shalom Dgital Solutions — Démarrage sur Render"
+echo "🚀 Shalom Digital Solutions — Démarrage sur Render"
 cd /var/www/html 2>/dev/null || cd /opt/render/project/src/backend 2>/dev/null || true
 
 # ================================================================
@@ -12,7 +12,6 @@ cd /var/www/html 2>/dev/null || cd /opt/render/project/src/backend 2>/dev/null |
 # ================================================================
 echo "📝 Génération .env..."
 
-# Générer APP_KEY si vide
 if [ -z "$APP_KEY" ]; then
     echo "🔑 APP_KEY vide, génération..."
     export APP_KEY=$(php artisan key:generate --show)
@@ -52,16 +51,39 @@ php artisan package:discover --ansi 2>&1 || true
 php artisan config:clear 2>&1 || true
 php artisan config:cache 2>&1
 
-echo "🔄 Migration de la base..."
-php artisan migrate --force 2>&1 || true 
+# ================================================================
+# 3️⃣ Migration intelligente
+#    - Table 'users' absente → migrate:fresh + seed (première fois)
+#    - Table 'users' présente → migrate simple   (données conservées)
+# ================================================================
+echo "🔄 Vérification de la base..."
 
-# ================================================================
-# 3️⃣ Seeder si base vide
-# ================================================================
-COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null | grep -E '^[0-9]+$' | tail -1)
-if [ -z "$COUNT" ] || [ "$COUNT" = "0" ]; then
-    echo "🌱 Seeder..."
-    php artisan db:seed --force 2>&1 
+TABLE_EXISTS=$(php artisan tinker --execute="
+try {
+    \$exists = \Illuminate\Support\Facades\Schema::hasTable('users');
+    echo \$exists ? 'yes' : 'no';
+} catch (\Exception \$e) {
+    echo 'no';
+}
+" 2>/dev/null | grep -E '^(yes|no)$' | tail -1)
+
+if [ "$TABLE_EXISTS" = "no" ] || [ -z "$TABLE_EXISTS" ]; then
+    echo "🆕 Base vide — migrate:fresh + seed..."
+    php artisan migrate:fresh --force 2>&1
+    php artisan db:seed --force 2>&1
+    echo "✅ Migration fraîche et seed terminés."
+else
+    echo "✅ Base existante — migrate simple (données conservées)..."
+    php artisan migrate --force 2>&1 || true
+
+    # Seeder uniquement si aucun utilisateur
+    COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null | grep -E '^[0-9]+$' | tail -1)
+    if [ -z "$COUNT" ] || [ "$COUNT" = "0" ]; then
+        echo "🌱 Aucun utilisateur — Seeder..."
+        php artisan db:seed --force 2>&1
+    else
+        echo "👤 Utilisateurs existants (${COUNT}) — Seeder ignoré."
+    fi
 fi
 
 # ================================================================
