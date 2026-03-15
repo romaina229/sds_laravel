@@ -80,7 +80,7 @@ return new class extends Migration
             $table->decimal('prix_fcfa', 10, 2);
             $table->decimal('prix_euro', 10, 2);
             $table->string('duree')->nullable();
-            $table->enum('categorie', ['web', 'excel', 'survey', 'formation']);
+            $table->enum('categorie', ['web', 'excel', 'survey', 'formation','materiel']);
             $table->boolean('popular')->default(false);
             $table->boolean('actif')->default(true);
             $table->json('features')->nullable(); // liste des fonctionnalités
