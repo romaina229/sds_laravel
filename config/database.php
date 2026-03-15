@@ -31,7 +31,7 @@ return [
             'password' => env('DB_PASSWORD'),
             'charset'  => 'utf8',
             'prefix'   => '',
-            'schema'   => env('DB_SCHEMA', 'mila_logistique'),
+            'schema'   => env('DB_SCHEMA', 'sds_laravel'),
             'sslmode'  => 'require',
         ],
     ],
