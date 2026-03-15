@@ -53,7 +53,7 @@ php artisan config:clear 2>&1 || true
 php artisan config:cache 2>&1
 
 echo "🔄 Migration de la base..."
-php artisan migrate --force 2>&1 || true 
+php artisan migrate:fresh 2>&1 || true 
 
 # ================================================================
 # 3️⃣ Seeder si base vide
