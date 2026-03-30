@@ -98,6 +98,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     // Certificats
     Route::get('/certificats',              [\App\Http\Controllers\Admin\CertificatController::class, 'index']);
+    Route::post('/certificats/manuel',      [\App\Http\Controllers\Admin\CertificatController::class, 'manuel']);
     Route::post('/certificats/import',      [\App\Http\Controllers\Admin\CertificatController::class, 'import']);
     Route::get('/certificats/batch/{id}',   [\App\Http\Controllers\Admin\CertificatController::class, 'batch']);
     Route::get('/verify/{code}',            [\App\Http\Controllers\Admin\CertificatController::class, 'verify']);

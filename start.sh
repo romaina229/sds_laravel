@@ -34,6 +34,15 @@ DB_DATABASE=${DB_DATABASE:-postgres}
 DB_USERNAME=${DB_USERNAME:-postgres.xxxxx}
 DB_PASSWORD=${DB_PASSWORD:-xxxxxx}
 
+MAIL_MAILER=smtp
+MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
+MAIL_PORT=${MAIL_PORT:-587}
+MAIL_USERNAME=${MAIL_USERNAME}
+MAIL_PASSWORD=${MAIL_PASSWORD}
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-noreply@shalomdigitalsolutions.com}
+MAIL_FROM_NAME="Shalom Digital Solutions"
+
 # Cache / Session / Queue
 SESSION_DRIVER=database
 CACHE_STORE=file

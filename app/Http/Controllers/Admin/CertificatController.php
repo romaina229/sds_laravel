@@ -173,6 +173,97 @@ class CertificatController extends Controller
         ]);
     }
 
+    public function manuel(Request $request)
+    {
+        $request->validate([
+            'nom_complet'    => 'required|string',
+            'formation'      => 'required|string',
+            'date_formation' => 'required|date',
+            'organisation'   => 'nullable|string',
+            'duree'          => 'nullable|string',
+            'mention'        => 'nullable|string',
+            'email'          => 'nullable|email',
+            'action'         => 'required|in:download,email,both',
+        ]);
+    
+        $code = strtoupper(\Illuminate\Support\Str::random(4) . '-' . \Illuminate\Support\Str::random(4) . '-' . \Illuminate\Support\Str::random(4));
+    
+        // Batch "manuel" unique par jour
+        $batch = \App\Models\CertificatBatch::firstOrCreate(
+            ['nom' => 'Manuel — ' . now()->format('d/m/Y')],
+            ['total' => 0, 'envoyes' => 0, 'erreurs' => 0, 'statut' => 'en_cours']
+        );
+        $batch->increment('total');
+    
+        $certificat = \App\Models\Certificat::create([
+            'nom_complet'       => $request->nom_complet,
+            'formation'         => $request->formation,
+            'organisation'      => $request->organisation ?? 'Shalom Digital Solutions',
+            'date_formation'    => $request->date_formation,
+            'duree'             => $request->duree,
+            'mention'           => $request->mention,
+            'email'             => $request->email,
+            'code_verification' => $code,
+            'batch_id'          => $batch->id,
+            'statut'            => 'genere',
+        ]);
+    
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('certificat', [
+            'nom_complet'       => $request->nom_complet,
+            'formation'         => $request->formation,
+            'organisation'      => $request->organisation ?? 'Shalom Digital Solutions',
+            'date_formation'    => \Carbon\Carbon::parse($request->date_formation),
+            'duree'             => $request->duree,
+            'mention'           => $request->mention ?: null,
+            'code_verification' => $code,
+        ])->setPaper('a4', 'landscape');
+    
+        $pdfContent  = $pdf->output();
+        $pdfFilename = 'certificats/manuel/' . \Illuminate\Support\Str::slug($request->nom_complet) . '-' . $code . '.pdf';
+        \Illuminate\Support\Facades\Storage::put($pdfFilename, $pdfContent);
+        $pdfUrl = \Illuminate\Support\Facades\Storage::url($pdfFilename);
+    
+        $statut = 'genere';
+    
+        // Envoi email si demandé
+        if (in_array($request->action, ['email', 'both']) && $request->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($request, $pdfContent, $code) {
+                    $message
+                        ->to($request->email, $request->nom_complet)
+                        ->subject("Votre certificat — {$request->formation}")
+                        ->html("
+                            <div style='font-family:sans-serif;max-width:600px;margin:auto;padding:24px'>
+                                <h2 style='color:#1e40af'>Félicitations, {$request->nom_complet} !</h2>
+                                <p>Veuillez trouver ci-joint votre certificat de participation :</p>
+                                <p style='font-weight:bold'>{$request->formation}</p>
+                                <p style='color:#64748b;font-size:13px'>Code de vérification : <strong>{$code}</strong></p>
+                                <hr style='margin:20px 0;border-color:#e2e8f0'>
+                                <p style='color:#94a3b8;font-size:12px'>Shalom Digital Solutions</p>
+                            </div>
+                        ")
+                        ->attachData($pdfContent, \Illuminate\Support\Str::slug($request->nom_complet) . '-certificat.pdf', [
+                            'mime' => 'application/pdf',
+                        ]);
+                });
+                $statut = 'envoye';
+                $certificat->update(['statut' => 'envoye', 'envoye_le' => now()]);
+                $batch->increment('envoyes');
+            } catch (\Exception $e) {
+                $statut = 'erreur_email';
+                $batch->increment('erreurs');
+            }
+        }
+    
+        return response()->json([
+            'success' => true,
+            'message' => $statut === 'envoye' ? 'Certificat généré et envoyé !' : 'Certificat généré avec succès.',
+            'code'    => $code,
+            'pdf_url' => $pdfUrl,
+            'statut'  => $statut,
+        ]);
+    }
+
     // ================================================================
     // GET /api/admin/certificats
     // Liste des batches avec stats
