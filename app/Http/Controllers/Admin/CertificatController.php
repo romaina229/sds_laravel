@@ -297,24 +297,175 @@ class CertificatController extends Controller
     // GET /api/verify/{code}
     // Vérification publique par QR code
     // ================================================================
-    public function verify($code)
-    {
-        $certificat = Certificat::where('code_verification', $code)->first();
+public function verify($code)
+{
+    $certificat = Certificat::where('code_verification', $code)->first();
 
-        if (!$certificat) {
-            return response()->json(['success' => false, 'message' => 'Certificat introuvable.'], 404);
+    if (!$certificat) {
+        return response()->json(['success' => false, 'message' => 'Certificat introuvable.'], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data'    => [
+            'nom_complet'    => $certificat->nom_complet,
+            'formation'      => $certificat->formation,
+            'organisation'   => $certificat->organisation,
+            'date_formation' => $certificat->date_formation,
+            'mention'        => $certificat->mention,
+            'statut'         => 'Valide ✓',
+        ],
+    ]);
+}
+
+// ================================================================
+// GET /api/admin/certificats/{id}/download
+// Régénère et retourne le PDF en téléchargement
+// ================================================================
+public function download($id)
+{
+    $certificat = Certificat::findOrFail($id);
+ 
+    $pdf = Pdf::loadView('certificat', [
+        'nom_complet'       => $certificat->nom_complet,
+        'formation'         => $certificat->formation,
+        'organisation'      => $certificat->organisation,
+        'date_formation'    => $certificat->date_formation,
+        'duree'             => $certificat->duree,
+        'mention'           => $certificat->mention ?: null,
+        'code_verification' => $certificat->code_verification,
+    ])->setPaper('a4', 'landscape');
+ 
+    $filename = Str::slug($certificat->nom_complet) . '-certificat.pdf';
+ 
+    return $pdf->download($filename);
+}
+ 
+// ----------------------------------------------------------------
+// POST /api/admin/certificats/{id}/renvoyer
+// Renvoi du certificat par email
+// ----------------------------------------------------------------
+public function renvoyer($id)
+{
+    $certificat = Certificat::findOrFail($id);
+ 
+    if (empty($certificat->email)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Aucune adresse email enregistrée pour ce certificat.',
+        ], 422);
+    }
+ 
+    // Régénérer le PDF
+    $pdf = Pdf::loadView('certificat', [
+        'nom_complet'       => $certificat->nom_complet,
+        'formation'         => $certificat->formation,
+        'organisation'      => $certificat->organisation,
+        'date_formation'    => $certificat->date_formation,
+        'duree'             => $certificat->duree,
+        'mention'           => $certificat->mention ?: null,
+        'code_verification' => $certificat->code_verification,
+    ])->setPaper('a4', 'landscape');
+ 
+    $pdfContent = $pdf->output();
+    $filename   = Str::slug($certificat->nom_complet) . '-certificat.pdf';
+    $code       = $certificat->code_verification;
+ 
+    try {
+        Mail::send([], [], function ($message) use ($certificat, $pdfContent, $filename, $code) {
+            $message
+                ->to($certificat->email, $certificat->nom_complet)
+                ->subject("Votre certificat — {$certificat->formation}")
+                ->html("
+                    <div style='font-family:sans-serif;max-width:600px;margin:auto;padding:24px'>
+                        <h2 style='color:#1e40af'>Félicitations, {$certificat->nom_complet} !</h2>
+                        <p>Veuillez trouver ci-joint votre certificat de participation à la formation :</p>
+                        <p style='font-weight:bold;color:#1e293b'>{$certificat->formation}</p>
+                        <p style='color:#64748b;font-size:13px'>
+                            Code de vérification : <strong>{$code}</strong>
+                        </p>
+                        <hr style='margin:20px 0;border-color:#e2e8f0'>
+                        <p style='color:#94a3b8;font-size:12px'>Shalom Digital Solutions</p>
+                    </div>
+                ")
+                ->attachData($pdfContent, $filename, ['mime' => 'application/pdf']);
+        });
+ 
+        $certificat->update(['statut' => 'envoye', 'envoye_le' => now()]);
+ 
+        // Mettre à jour le compteur du batch
+        if ($certificat->batch_id) {
+            CertificatBatch::where('id', $certificat->batch_id)->increment('envoyes');
         }
-
+ 
         return response()->json([
             'success' => true,
-            'data'    => [
-                'nom_complet'    => $certificat->nom_complet,
-                'formation'      => $certificat->formation,
-                'organisation'   => $certificat->organisation,
-                'date_formation' => $certificat->date_formation,
-                'mention'        => $certificat->mention,
-                'statut'         => 'Valide ✓',
-            ],
+            'message' => "Certificat renvoyé à {$certificat->email}.",
         ]);
+ 
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur envoi email : ' . $e->getMessage(),
+        ], 500);
     }
+}
+ 
+// ----------------------------------------------------------------
+// DELETE /api/admin/certificats/{id}
+// Supprime un certificat
+// ----------------------------------------------------------------
+public function destroy($id)
+{
+    $certificat = Certificat::findOrFail($id);
+ 
+    // Supprimer le fichier PDF stocké si présent
+    $pdfPath = 'certificats/' . $certificat->batch_id . '/' . Str::slug($certificat->nom_complet) . '-' . $certificat->code_verification . '.pdf';
+    if (Storage::exists($pdfPath)) {
+        Storage::delete($pdfPath);
+    }
+ 
+    // Mettre à jour les compteurs du batch
+    if ($certificat->batch_id) {
+        $batch = CertificatBatch::find($certificat->batch_id);
+        if ($batch) {
+            $batch->decrement('total');
+            if ($certificat->statut === 'envoye') {
+                $batch->decrement('envoyes');
+            }
+        }
+    }
+ 
+    $certificat->delete();
+ 
+    return response()->json([
+        'success' => true,
+        'message' => 'Certificat supprimé.',
+    ]);
+}
+ 
+// ----------------------------------------------------------------
+// DELETE /api/admin/certificats/batch/{id}
+// Supprime un batch entier et tous ses certificats
+// ----------------------------------------------------------------
+public function destroyBatch($id)
+{
+    $batch = CertificatBatch::findOrFail($id);
+ 
+    // Supprimer tous les fichiers PDF du batch
+    $batchFolder = 'certificats/' . $id;
+    if (Storage::exists($batchFolder)) {
+        Storage::deleteDirectory($batchFolder);
+    }
+ 
+    // Supprimer tous les certificats liés
+    Certificat::where('batch_id', $id)->delete();
+ 
+    $batch->delete();
+ 
+    return response()->json([
+        'success' => true,
+        'message' => "Batch \"{$batch->nom}\" et ses {$batch->total} certificat(s) supprimés.",
+    ]);
+}
 }

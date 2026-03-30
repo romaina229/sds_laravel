@@ -43,6 +43,9 @@ Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/categories', [BlogController::class, 'categories']);
 Route::get('/blog/{slug}', [BlogController::class, 'show']);
 
+//certificats vérifications
+Route::get('/verify/{code}',      [\App\Http\Controllers\Admin\CertificatController::class, 'verify']);
+
 // Auth admin
 Route::post('/auth/login', [AuthController::class, 'login']);
 
@@ -101,5 +104,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/certificats/manuel',      [\App\Http\Controllers\Admin\CertificatController::class, 'manuel']);
     Route::post('/certificats/import',      [\App\Http\Controllers\Admin\CertificatController::class, 'import']);
     Route::get('/certificats/batch/{id}',   [\App\Http\Controllers\Admin\CertificatController::class, 'batch']);
-    Route::get('/verify/{code}',            [\App\Http\Controllers\Admin\CertificatController::class, 'verify']);
+    // Certificats — routes complémentaires
+    Route::get('/certificats/{id}/download',        [\App\Http\Controllers\Admin\CertificatController::class, 'download']);
+    Route::post('/certificats/{id}/renvoyer',       [\App\Http\Controllers\Admin\CertificatController::class, 'renvoyer']);
+    Route::delete('/certificats/{id}',              [\App\Http\Controllers\Admin\CertificatController::class, 'destroy']);
+    Route::delete('/certificats/batch/{id}',        [\App\Http\Controllers\Admin\CertificatController::class, 'destroyBatch']);
 });
