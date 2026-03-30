@@ -95,4 +95,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/exports/commandes', [\App\Http\Controllers\Admin\ExportController::class, 'exportCommandes']);
     Route::get('/exports/contacts',  [\App\Http\Controllers\Admin\ExportController::class, 'exportContacts']);
     Route::get('/exports/revenus',   [\App\Http\Controllers\Admin\ExportController::class, 'exportRevenusMensuels']);
+
+    // Certificats
+    Route::get('/certificats',              [\App\Http\Controllers\Admin\CertificatController::class, 'index']);
+    Route::post('/certificats/import',      [\App\Http\Controllers\Admin\CertificatController::class, 'import']);
+    Route::get('/certificats/batch/{id}',   [\App\Http\Controllers\Admin\CertificatController::class, 'batch']);
+    Route::get('/verify/{code}',            [\App\Http\Controllers\Admin\CertificatController::class, 'verify']);
 });
