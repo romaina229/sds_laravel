@@ -261,7 +261,7 @@ class CommandeController extends Controller
         return [
             'titulaire'        => 'Shalom Digital Solutions',
             'banque'           => 'Bank Of Africa Bénin',
-            'rib'              => 'BJ06 0115 0301 0012 3456 7890 123',
+            'rib'              => 'BJ061 01031 003836 880009 52',
             'swift'            => 'AFRIBJBJ',
             'montant'          => $commande->total_ttc_fcfa,
             'montant_format'   => $commande->montant_format,
