@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
             ['cle'=>'taux_aib','valeur'=>'0.05','groupe'=>'fiscal'],
             ['cle'=>'site_nom','valeur'=>'Shalom Digital Solutions','groupe'=>'general'],
             ['cle'=>'site_email','valeur'=>'liferopro@gmail.com','groupe'=>'general'],
-            ['cle'=>'site_telephone','valeur'=>'+229 01 69 35 17 66','groupe'=>'general'],
+            ['cle'=>'site_telephone','valeur'=>'+229 01 44 95 83 83','groupe'=>'general'],
             ['cle'=>'site_whatsapp','valeur'=>'+22994592567','groupe'=>'general'],
             ['cle'=>'site_adresse','valeur'=>'Abomey-Calavi, Bénin','groupe'=>'general'],
             ['cle'=>'maintenance_mode','valeur'=>'0','groupe'=>'system'],

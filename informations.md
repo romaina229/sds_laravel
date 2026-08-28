@@ -199,6 +199,6 @@ Tables créées par migration :
 
 **Shalom Digital Solutions**
 - 📍 Abomey-Calavi, Bénin
-- 📞 +229 01 69 35 17 66
+- 📞 +229 01 44 95 83 83
 - ✉️ liferopro@gmail.com
 - 💬 WhatsApp : +229 01 94 59 25 67
