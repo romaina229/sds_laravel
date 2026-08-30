@@ -22,7 +22,7 @@ class ServiceAdminController extends Controller
             'nom'        => 'required|string|max:255',
             'description'=> 'required|string',
             'prix_fcfa'  => 'required|numeric|min:0',
-            'categorie'  => 'required|in:web,excel,survey,formation',
+            'categorie'  => 'required|in:web,excel,survey,formation,materiel',
         ]);
 
         $service = Service::create([
@@ -38,7 +38,7 @@ class ServiceAdminController extends Controller
             'features'    => $request->features ?? [],
         ]);
 
-        Cache::flush(); // Invalider le cache services
+        Cache::flush();
         return response()->json(['success' => true, 'data' => $service], 201);
     }
 
@@ -66,7 +66,7 @@ class ServiceAdminController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $service = Service::findOrFail($id);
-        $service->update(['actif' => false]); // Soft disable plutôt que supprimer
+        $service->update(['actif' => false]);
         Cache::flush();
         return response()->json(['success' => true, 'message' => 'Service désactivé.']);
     }
