@@ -102,6 +102,7 @@ class FinanceProContentAdminController extends Controller
 
     private function clearCache(): void
     {
+        Cache::forget('finance_pro_public');
         Cache::forget('finance_pro_content');
     }
 }
