@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\FinanceProController;
 use App\Http\Controllers\Api\CommandeController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\BlogController;
@@ -16,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/categorie/{categorie}', [ServiceController::class, 'byCategorie']);
 Route::get('/services/{id}', [ServiceController::class, 'show']);
+
+// Finance Pro — contenu commercial publié
+Route::get('/finance-pro', [FinanceProController::class, 'show']);
 
 // Commandes (création + callbacks paiement)
 Route::post('/commandes', [CommandeController::class, 'store']);
@@ -35,7 +39,7 @@ Route::get('/paiement/annule/{commande}', function (string $commande) {
 // Contact
 Route::post('/contact', [ContactController::class, 'store']);
 
-// Garder en éveil render 
+// Garder en éveil render
 Route::get('health', fn() => response()->json(['status' => 'ok']));
 
 // Blog
@@ -43,8 +47,8 @@ Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/categories', [BlogController::class, 'categories']);
 Route::get('/blog/{slug}', [BlogController::class, 'show']);
 
-//certificats vérifications
-Route::get('/verify/{code}',      [\App\Http\Controllers\Admin\CertificatController::class, 'verify']);
+// certificats vérifications
+Route::get('/verify/{code}', [\App\Http\Controllers\Admin\CertificatController::class, 'verify']);
 
 // Auth admin
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -77,18 +81,19 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     // Blog
     Route::apiResource('blog', \App\Http\Controllers\Admin\BlogAdminController::class);
 
+    // Finance Pro — administration à venir
+
     // Commandes – détail
     Route::get('/commandes/{id}', [DashboardController::class, 'commandeDetail']);
 
     // Paramètres
-    Route::get('/parametres',         [\App\Http\Controllers\Admin\ParametreAdminController::class, 'index']);
-    Route::post('/parametres',        [\App\Http\Controllers\Admin\ParametreAdminController::class, 'update']);
+    Route::get('/parametres', [\App\Http\Controllers\Admin\ParametreAdminController::class, 'index']);
+    Route::post('/parametres', [\App\Http\Controllers\Admin\ParametreAdminController::class, 'update']);
     Route::patch('/parametres/{cle}', [\App\Http\Controllers\Admin\ParametreAdminController::class, 'updateOne']);
 
-
     // Gestion des administrateurs
-    Route::get('/admins',         [\App\Http\Controllers\Admin\AdminUserController::class, 'index']);
-    Route::post('/admins',        [\App\Http\Controllers\Admin\AdminUserController::class, 'store']);
+    Route::get('/admins', [\App\Http\Controllers\Admin\AdminUserController::class, 'index']);
+    Route::post('/admins', [\App\Http\Controllers\Admin\AdminUserController::class, 'store']);
     Route::delete('/admins/{id}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy']);
 
     // Changement de mot de passe
@@ -96,17 +101,16 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     // Exports CSV
     Route::get('/exports/commandes', [\App\Http\Controllers\Admin\ExportController::class, 'exportCommandes']);
-    Route::get('/exports/contacts',  [\App\Http\Controllers\Admin\ExportController::class, 'exportContacts']);
-    Route::get('/exports/revenus',   [\App\Http\Controllers\Admin\ExportController::class, 'exportRevenusMensuels']);
+    Route::get('/exports/contacts', [\App\Http\Controllers\Admin\ExportController::class, 'exportContacts']);
+    Route::get('/exports/revenus', [\App\Http\Controllers\Admin\ExportController::class, 'exportRevenusMensuels']);
 
     // Certificats
-    Route::get('/certificats',              [\App\Http\Controllers\Admin\CertificatController::class, 'index']);
-    Route::post('/certificats/manuel',      [\App\Http\Controllers\Admin\CertificatController::class, 'manuel']);
-    Route::post('/certificats/import',      [\App\Http\Controllers\Admin\CertificatController::class, 'import']);
-    Route::get('/certificats/batch/{id}',   [\App\Http\Controllers\Admin\CertificatController::class, 'batch']);
-    // Certificats — routes complémentaires
-    Route::get('/certificats/{id}/download',        [\App\Http\Controllers\Admin\CertificatController::class, 'download']);
-    Route::post('/certificats/{id}/renvoyer',       [\App\Http\Controllers\Admin\CertificatController::class, 'renvoyer']);
-    Route::delete('/certificats/{id}',              [\App\Http\Controllers\Admin\CertificatController::class, 'destroy']);
-    Route::delete('/certificats/batch/{id}',        [\App\Http\Controllers\Admin\CertificatController::class, 'destroyBatch']);
+    Route::get('/certificats', [\App\Http\Controllers\Admin\CertificatController::class, 'index']);
+    Route::post('/certificats/manuel', [\App\Http\Controllers\Admin\CertificatController::class, 'manuel']);
+    Route::post('/certificats/import', [\App\Http\Controllers\Admin\CertificatController::class, 'import']);
+    Route::get('/certificats/batch/{id}', [\App\Http\Controllers\Admin\CertificatController::class, 'batch']);
+    Route::get('/certificats/{id}/download', [\App\Http\Controllers\Admin\CertificatController::class, 'download']);
+    Route::post('/certificats/{id}/renvoyer', [\App\Http\Controllers\Admin\CertificatController::class, 'renvoyer']);
+    Route::delete('/certificats/{id}', [\App\Http\Controllers\Admin\CertificatController::class, 'destroy']);
+    Route::delete('/certificats/batch/{id}', [\App\Http\Controllers\Admin\CertificatController::class, 'destroyBatch']);
 });
