@@ -14,7 +14,6 @@ class ServiceApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Créer quelques services de test
         Service::factory()->count(3)->create(['actif' => true, 'categorie' => 'web']);
         Service::factory()->create(['actif' => false, 'categorie' => 'excel']);
     }
@@ -25,9 +24,8 @@ class ServiceApiTest extends TestCase
         $response = $this->getJson('/api/services');
 
         $response->assertOk()
-                 ->assertJsonPath('success', true);
+            ->assertJsonPath('success', true);
 
-        // Seulement les 3 actifs
         $this->assertCount(3, $response->json('data'));
     }
 
@@ -48,7 +46,40 @@ class ServiceApiTest extends TestCase
         $service = Service::factory()->create(['actif' => true]);
 
         $this->getJson("/api/services/{$service->id}")
-             ->assertOk()
-             ->assertJsonPath('data.id', $service->id);
+            ->assertOk()
+            ->assertJsonPath('data.id', $service->id);
+    }
+
+    /** @test */
+    public function an_inactive_service_is_not_returned_by_category_endpoint()
+    {
+        $inactive = Service::factory()->create(['actif' => false, 'categorie' => 'materiel']);
+
+        $response = $this->getJson('/api/services/categorie/materiel');
+
+        $response->assertOk();
+        $this->assertCount(0, $response->json('data'));
+        $this->assertFalse(collect($response->json('data'))->contains('id', $inactive->id));
+    }
+
+    /** @test */
+    public function it_supports_the_materials_category()
+    {
+        Service::factory()->create(['actif' => true, 'categorie' => 'materiel']);
+
+        $response = $this->getJson('/api/services/categorie/materiel');
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+        $response->assertJsonPath('data.0.categorie', 'materiel');
+    }
+
+    /** @test */
+    public function it_does_not_expose_an_inactive_service_through_single_service_endpoint()
+    {
+        $inactive = Service::factory()->create(['actif' => false]);
+
+        $this->getJson("/api/services/{$inactive->id}")
+            ->assertNotFound();
     }
 }
