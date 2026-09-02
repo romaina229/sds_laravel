@@ -31,7 +31,6 @@ Route::get('health', fn() => response()->json(['status' => 'ok']));
 Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/categories', [BlogController::class, 'categories']);
 Route::get('/blog/{slug}', [BlogController::class, 'show']);
-Route::get('/verify/{code}', [\App\Http\Controllers\Admin\CertificatController::class, 'verify']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 // ===================================================
@@ -69,12 +68,4 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/exports/commandes', [\App\Http\Controllers\Admin\ExportController::class, 'exportCommandes']);
     Route::get('/exports/contacts', [\App\Http\Controllers\Admin\ExportController::class, 'exportContacts']);
     Route::get('/exports/revenus', [\App\Http\Controllers\Admin\ExportController::class, 'exportRevenusMensuels']);
-    Route::get('/certificats', [\App\Http\Controllers\Admin\CertificatController::class, 'index']);
-    Route::post('/certificats/manuel', [\App\Http\Controllers\Admin\CertificatController::class, 'manuel']);
-    Route::post('/certificats/import', [\App\Http\Controllers\Admin\CertificatController::class, 'import']);
-    Route::get('/certificats/batch/{id}', [\App\Http\Controllers\Admin\CertificatController::class, 'batch']);
-    Route::get('/certificats/{id}/download', [\App\Http\Controllers\Admin\CertificatController::class, 'download']);
-    Route::post('/certificats/{id}/renvoyer', [\App\Http\Controllers\Admin\CertificatController::class, 'renvoyer']);
-    Route::delete('/certificats/{id}', [\App\Http\Controllers\Admin\CertificatController::class, 'destroy']);
-    Route::delete('/certificats/batch/{id}', [\App\Http\Controllers\Admin\CertificatController::class, 'destroyBatch']);
 });
