@@ -123,7 +123,7 @@
         <hr class="divider">
         <p class="text" style="font-size: 13px;">
             Une question ? Contactez-nous directement :<br>
-            📧 <a href="mailto:liferopro@gmail.com" style="color: #1e40af;">liferopro@gmail.com</a> &nbsp;·&nbsp;
+            📧 <a href="mailto:afrisds@gmail.com" style="color: #1e40af;">afrisds@gmail.com</a> &nbsp;·&nbsp;
             💬 <a href="https://wa.me/22994592567" style="color: #1e40af;">WhatsApp +229 01 94 59 25 67</a>
         </p>
     </div>
@@ -132,7 +132,7 @@
     <div class="footer">
         <p>
             <strong style="color: #94a3b8;">Shalom Digital Solutions</strong><br>
-            Abomey-Calavi, Bénin · <a href="mailto:liferopro@gmail.com">liferopro@gmail.com</a><br>
+            Abomey-Calavi, Bénin · <a href="mailto:afrisds@gmail.com">afrisds@gmail.com</a><br>
             <a href="{{ config('app.url') }}/mentions-legales">Mentions légales</a> ·
             <a href="{{ config('app.url') }}/confidentialite">Confidentialité</a>
         </p>

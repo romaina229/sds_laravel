@@ -266,7 +266,7 @@ class CommandeController extends Controller
             'montant'          => $commande->total_ttc_fcfa,
             'montant_format'   => $commande->montant_format,
             'reference'        => $commande->numero_commande,
-            'email_notification'=> 'liferopro@gmail.com',
+            'email_notification'=> 'afrisds@gmail.com',
         ];
     }
 

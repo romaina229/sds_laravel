@@ -41,7 +41,7 @@ class ContactController extends Controller
 
         // Notifier l'admin par email
         try {
-            $adminEmail = \App\Models\Parametre::get('site_email', 'liferopro@gmail.com');
+            $adminEmail = \App\Models\Parametre::get('site_email', 'afrisds@gmail.com');
             Mail::to($adminEmail)->send(new NouveauContact($contact));
         } catch (\Exception $e) {
             Log::warning("Echec envoi email contact {$contact->reference}: {$e->getMessage()}");

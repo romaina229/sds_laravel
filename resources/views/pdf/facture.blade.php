@@ -43,7 +43,7 @@
             <h1>Shalom Digital <span>Solutions</span></h1>
             <p>Solutions Numériques Complètes</p>
             <p>Abomey-Calavi, Bénin</p>
-            <p>+229 01 44 95 83 83 | liferopro@gmail.com</p>
+            <p>+229 01 44 95 83 83 | afrisds@gmail.com</p>
         </div>
         <div class="invoice-info">
             <h2>Facture</h2>
@@ -61,7 +61,7 @@
             <p><strong>Shalom Digital Solutions</strong></p>
             <p>Abomey-Calavi, Bénin</p>
             <p>+229 01 44 95 83 83</p>
-            <p>liferopro@gmail.com</p>
+            <p>afrisds@gmail.com</p>
             <p>www.shalomdigitalsolutions.com</p>
         </div>
         <div class="party">
