@@ -27,6 +27,8 @@ Route::get('/paiement/annule/{commande}', function (string $commande) {
     return response()->json(['success' => false, 'commande' => $commande, 'message' => 'Paiement annulé.']);
 })->name('paiement.annule');
 Route::post('/contact', [ContactController::class, 'store']);
+Route::post('/guide-finance-pro/telecharger', [\App\Http\Controllers\Api\GuideDownloadController::class, 'store']);
+Route::get('/guide-finance-pro/telecharger/{token}', [\App\Http\Controllers\Api\GuideDownloadController::class, 'download'])->name('api.guide.telecharger');
 Route::get('health', fn() => response()->json(['status' => 'ok']));
 Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/categories', [BlogController::class, 'categories']);
@@ -47,6 +49,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::apiResource('services', \App\Http\Controllers\Admin\ServiceAdminController::class);
     Route::get('/contacts', [\App\Http\Controllers\Admin\ContactAdminController::class, 'index']);
     Route::patch('/contacts/{id}/statut', [\App\Http\Controllers\Admin\ContactAdminController::class, 'updateStatut']);
+    Route::get('/guide-downloads', [\App\Http\Controllers\Admin\GuideDownloadAdminController::class, 'index']);
+    Route::get('/guide-file', [\App\Http\Controllers\Admin\GuideFileAdminController::class, 'show']);
+    Route::post('/guide-file', [\App\Http\Controllers\Admin\GuideFileAdminController::class, 'upload']);
     Route::apiResource('blog', \App\Http\Controllers\Admin\BlogAdminController::class);
 
     // Finance Pro — gestion du contenu commercial
@@ -67,5 +72,6 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/auth/change-password', [\App\Http\Controllers\Auth\AuthController::class, 'changePassword']);
     Route::get('/exports/commandes', [\App\Http\Controllers\Admin\ExportController::class, 'exportCommandes']);
     Route::get('/exports/contacts', [\App\Http\Controllers\Admin\ExportController::class, 'exportContacts']);
+    Route::get('/exports/guide-downloads', [\App\Http\Controllers\Admin\ExportController::class, 'exportGuideDownloads']);
     Route::get('/exports/revenus', [\App\Http\Controllers\Admin\ExportController::class, 'exportRevenusMensuels']);
 });

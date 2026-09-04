@@ -42,6 +42,16 @@ return [
             'throw'      => false,
         ],
 
+        // Disque dédié au guide Finance Pro (PRIVÉ, jamais lié à /storage) :
+        // le seul moyen d'obtenir le fichier est la route protégée par
+        // jeton GuideDownloadController::download — voir routes/api.php.
+        'guides' => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/private/guides'),
+            'visibility' => 'private',
+            'throw'      => false,
+        ],
+
     ],
 
     /*

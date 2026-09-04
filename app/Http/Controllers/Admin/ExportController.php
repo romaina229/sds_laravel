@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Commande;
 use App\Models\Contact;
+use App\Models\GuideDownload;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -87,6 +88,46 @@ class ExportController extends Controller
         );
 
         $filename = 'contacts_' . now()->format('Ymd_His') . '.csv';
+
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
+     * Export des prospects (téléchargements du guide Finance Pro) en CSV —
+     * le mini CRM commercial, exploitable directement dans un tableur.
+     */
+    public function exportGuideDownloads(Request $request): Response
+    {
+        $query = GuideDownload::latest();
+
+        if ($request->filled('consentement_seulement') && $request->boolean('consentement_seulement')) {
+            $query->where('consentement_marketing', true);
+        }
+
+        $downloads = $query->get();
+
+        $csv = $this->buildCsv(
+            ['Date', 'Nom', 'Organisation', 'Responsabilité', 'Pays', 'Taille organisation', 'Nb projets', 'Email', 'Téléphone', 'Consentement marketing', 'Téléchargé', 'Nb téléchargements'],
+            $downloads->map(fn ($d) => [
+                $d->created_at->format('d/m/Y H:i'),
+                $d->nom,
+                $d->organisation,
+                $d->fonctionLabel(),
+                $d->pays,
+                GuideDownload::TAILLES[$d->taille_organisation] ?? '',
+                $d->nombre_projets ?? '',
+                $d->email,
+                $d->telephone ?? '',
+                $d->consentement_marketing ? 'Oui' : 'Non',
+                $d->telecharge_at ? 'Oui' : 'Non',
+                $d->nombre_telechargements,
+            ])->toArray()
+        );
+
+        $filename = 'prospects_guide_finance_pro_' . now()->format('Ymd_His') . '.csv';
 
         return response($csv, 200, [
             'Content-Type'        => 'text/csv; charset=UTF-8',
