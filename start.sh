@@ -76,12 +76,24 @@ try {
 }
 " 2>/dev/null | grep -E '^(yes|no)$' | tail -1)
 
-
+if [ "$TABLE_EXISTS" = "no" ] || [ -z "$TABLE_EXISTS" ]; then
     echo "🆕 Base vide — migrate:fresh + seed..."
     php artisan migrate:fresh --force 2>&1
     php artisan db:seed --force 2>&1
     echo "✅ Migration fraîche et seed terminés."
+else
+    echo "✅ Base existante — migrate simple (données conservées)..."
+    php artisan migrate --force 2>&1 || true
 
+    # Seeder uniquement si aucun utilisateur
+    COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null | grep -E '^[0-9]+$' | tail -1)
+    if [ -z "$COUNT" ] || [ "$COUNT" = "0" ]; then
+        echo "🌱 Aucun utilisateur — Seeder..."
+        php artisan db:seed --force 2>&1
+    else
+        echo "👤 Utilisateurs existants (${COUNT}) — Seeder ignoré."
+    fi
+fi
 
 # ================================================================
 # 4️⃣ Caches Laravel
